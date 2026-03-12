@@ -47,9 +47,13 @@ func NewServer(nef nef, tlsKeyLogPath string) (*Server, error) {
 
 	s.router.Use(metrics.InboundMetrics())
 
-	// Callback is always mounted – NEF acts as a notification receiver here,
-	// so no inbound token check is required.
+	// Callback endpoint: protected by OAuth2 middleware (callers must present
+	// a valid namf/nsmf-callback Bearer token issued by NRF).
+	callbackAuthCheck := nef_util.NewRouterAuthorizationCheck(models.ServiceName("nnef-callback"))
 	callbackGroup := s.router.Group(factory.NefCallbackResUriPrefix)
+	callbackGroup.Use(func(c *gin.Context) {
+		callbackAuthCheck.Check(c, s.Context())
+	})
 	applyRoutes(callbackGroup, s.getCallbackRoutes())
 
 	// All other route groups are mounted only when their service is declared in
