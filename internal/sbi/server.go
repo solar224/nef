@@ -48,7 +48,7 @@ func NewServer(nef nef, tlsKeyLogPath string) (*Server, error) {
 	s.router.Use(metrics.InboundMetrics())
 
 	// Callback endpoint: protected by OAuth2 middleware (callers must present
-	// a valid namf/nsmf-callback Bearer token issued by NRF).
+	// a valid nnef-callback Bearer token issued by NRF).
 	callbackAuthCheck := nef_util.NewRouterAuthorizationCheck(models.ServiceName("nnef-callback"))
 	callbackGroup := s.router.Group(factory.NefCallbackResUriPrefix)
 	callbackGroup.Use(func(c *gin.Context) {
