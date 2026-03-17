@@ -17,6 +17,7 @@ var (
 	tiSub1ForAf1 = models.NefTrafficInfluSub{
 		AfServiceId: "Service1",
 		AfAppId:     "App1",
+		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app1",
 		Dnn:         "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
@@ -45,6 +46,7 @@ var (
 	tiSub2ForAf1 = models.NefTrafficInfluSub{
 		AfServiceId: "Service2",
 		AfAppId:     "App2",
+		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app2",
 		Dnn:         "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
@@ -73,6 +75,7 @@ var (
 	tiSub3ForAf1 = models.NefTrafficInfluSub{
 		AfServiceId: "Service3",
 		AfAppId:     "App3",
+		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app3",
 		Dnn:         "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
@@ -100,6 +103,7 @@ var (
 
 	tiSub4ForAf1 = models.NefTrafficInfluSub{
 		AfServiceId: "Service4",
+		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app4",
 		Dnn:         "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
@@ -111,11 +115,40 @@ var (
 	tiSub5ForAf1 = models.NefTrafficInfluSub{
 		AfServiceId: "Service5",
 		AfAppId:     "App5",
+		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app5",
 		TrafficFilters: []models.FlowInfo{
 			{
 				FlowId: 1,
 				FlowDescriptions: []string{
 					"permit out ip from 192.168.0.23 to 10.60.0.10",
+				},
+			},
+		},
+		TrafficRoutes: []*models.RouteToLocation{
+			{
+				Dnai: "mec",
+				RouteInfo: &models.RouteInformation{
+					Ipv4Addr:   "10.60.0.1",
+					PortNumber: 0,
+				},
+			},
+		},
+	}
+
+	tiSub6ForAf1 = models.NefTrafficInfluSub{
+		AfServiceId: "Service6",
+		AfAppId:     "App6",
+		AnyUeInd:    true,
+		Dnn:         "internet",
+		Snssai: &models.Snssai{
+			Sst: 1,
+			Sd:  "010203",
+		},
+		TrafficFilters: []models.FlowInfo{
+			{
+				FlowId: 1,
+				FlowDescriptions: []string{
+					"permit out ip from 192.168.0.26 to 10.60.0.0/16",
 				},
 			},
 		},
@@ -322,7 +355,20 @@ func TestPostTrafficInfluenceSubscription(t *testing.T) {
 			},
 		},
 		{
-			description: "TC3: Missing one of afAppId, trafficFilters or ethTrafficFilters",
+			description: "TC3: Missing notificationDestination",
+			afID:        "af1",
+			tiSub:       &tiSub6ForAf1,
+			expectedResponse: &HandlerResponse{
+				Status: http.StatusBadRequest,
+				Body: &models.ProblemDetails{
+					Status: http.StatusBadRequest,
+					Title:  "Malformed request syntax",
+					Detail: "Missing notificationDestination",
+				},
+			},
+		},
+		{
+			description: "TC4: Missing one of afAppId, trafficFilters or ethTrafficFilters",
 			afID:        "af1",
 			tiSub:       &tiSub4ForAf1,
 			expectedResponse: &HandlerResponse{
@@ -335,7 +381,7 @@ func TestPostTrafficInfluenceSubscription(t *testing.T) {
 			},
 		},
 		{
-			description: "TC4: Missing one of Gpsi, Ipv4Addr, Ipv6Addr, ExternalGroupId, AnyUeInd",
+			description: "TC5: Missing one of Gpsi, Ipv4Addr, Ipv6Addr, ExternalGroupId, AnyUeInd",
 			afID:        "af1",
 			tiSub:       &tiSub5ForAf1,
 			expectedResponse: &HandlerResponse{
@@ -588,7 +634,21 @@ func TestPutIndividualTrafficInfluenceSubscription(t *testing.T) {
 			},
 		},
 		{
-			description: "TC4: Missing one of afAppId, trafficFilters or ethTrafficFilters",
+			description: "TC4: Missing notificationDestination",
+			afID:        "af1",
+			subID:       "1",
+			tiSub:       &tiSub6ForAf1,
+			expectedResponse: &HandlerResponse{
+				Status: http.StatusBadRequest,
+				Body: &models.ProblemDetails{
+					Status: http.StatusBadRequest,
+					Title:  "Malformed request syntax",
+					Detail: "Missing notificationDestination",
+				},
+			},
+		},
+		{
+			description: "TC5: Missing one of afAppId, trafficFilters or ethTrafficFilters",
 			afID:        "af1",
 			subID:       "4",
 			tiSub:       &tiSub4ForAf1,
@@ -602,7 +662,7 @@ func TestPutIndividualTrafficInfluenceSubscription(t *testing.T) {
 			},
 		},
 		{
-			description: "TC5: Missing one of Gpsi, Ipv4Addr, Ipv6Addr, ExternalGroupId, AnyUeInd",
+			description: "TC6: Missing one of Gpsi, Ipv4Addr, Ipv6Addr, ExternalGroupId, AnyUeInd",
 			afID:        "af1",
 			subID:       "5",
 			tiSub:       &tiSub5ForAf1,

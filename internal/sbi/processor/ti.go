@@ -2,6 +2,7 @@ package processor
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/free5gc/nef/internal/logger"
 	"github.com/free5gc/nef/pkg/factory"
@@ -416,6 +417,17 @@ func (p *Processor) DeleteIndividualTrafficInfluenceSubscription(
 func validateTrafficInfluenceData(
 	tiSub *models.NefTrafficInfluSub,
 ) *models.ProblemDetails {
+	if tiSub.NotificationDestination == "" {
+		pd := openapi.ProblemDetailsMalformedReqSyntax("Missing notificationDestination")
+		return pd
+	}
+
+	parsedNotificationDestination, err := url.ParseRequestURI(tiSub.NotificationDestination)
+	if err != nil || parsedNotificationDestination.Scheme == "" || parsedNotificationDestination.Host == "" {
+		pd := openapi.ProblemDetailsMalformedReqSyntax("Invalid notificationDestination")
+		return pd
+	}
+
 	// TS29.522: One of "afAppId", "trafficFilters" or "ethTrafficFilters" shall be included.
 	if tiSub.AfAppId == "" &&
 		len(tiSub.TrafficFilters) == 0 &&
