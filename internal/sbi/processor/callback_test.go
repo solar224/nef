@@ -20,7 +20,7 @@ func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 
 func TestBindOAuthTokenToRequest(t *testing.T) {
 	t.Run("context without token source", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "http://example.com", nil)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://example.com", nil)
 		if err != nil {
 			t.Fatalf("create request failed: %v", err)
 		}
@@ -35,7 +35,7 @@ func TestBindOAuthTokenToRequest(t *testing.T) {
 	})
 
 	t.Run("context with token source", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, "http://example.com", nil)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodPost, "http://example.com", nil)
 		if err != nil {
 			t.Fatalf("create request failed: %v", err)
 		}

@@ -1,8 +1,8 @@
 package processor
 
 import (
-	"context"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -79,8 +79,11 @@ func postSmfEventExposureNotificationToAf(
 	if err != nil {
 		return fmt.Errorf("serialize SMF notification failed: %w", err)
 	}
+	if requestCtx == nil {
+		requestCtx = context.Background()
+	}
 
-	httpReq, err := http.NewRequest(http.MethodPost, notifDestination, bytes.NewReader(reqBody))
+	httpReq, err := http.NewRequestWithContext(requestCtx, http.MethodPost, notifDestination, bytes.NewReader(reqBody))
 	if err != nil {
 		return fmt.Errorf("create AF callback request failed: %w", err)
 	}
@@ -94,8 +97,12 @@ func postSmfEventExposureNotificationToAf(
 		return fmt.Errorf("send AF callback failed: %w", err)
 	}
 	defer func() {
-		_, _ = io.Copy(io.Discard, httpRsp.Body)
-		_ = httpRsp.Body.Close()
+		if _, copyErr := io.Copy(io.Discard, httpRsp.Body); copyErr != nil {
+			logger.TrafInfluLog.Warnf("drain AF callback response body failed: %v", copyErr)
+		}
+		if closeErr := httpRsp.Body.Close(); closeErr != nil {
+			logger.TrafInfluLog.Warnf("close AF callback response body failed: %v", closeErr)
+		}
 	}()
 
 	if httpRsp.StatusCode < http.StatusOK || httpRsp.StatusCode >= http.StatusMultipleChoices {

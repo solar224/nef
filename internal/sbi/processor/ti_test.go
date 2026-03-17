@@ -15,10 +15,10 @@ import (
 
 var (
 	tiSub1ForAf1 = models.NefTrafficInfluSub{
-		AfServiceId: "Service1",
-		AfAppId:     "App1",
+		AfServiceId:             "Service1",
+		AfAppId:                 "App1",
 		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app1",
-		Dnn:         "internet",
+		Dnn:                     "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
 			Sd:  "010203",
@@ -44,10 +44,10 @@ var (
 	}
 
 	tiSub2ForAf1 = models.NefTrafficInfluSub{
-		AfServiceId: "Service2",
-		AfAppId:     "App2",
+		AfServiceId:             "Service2",
+		AfAppId:                 "App2",
 		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app2",
-		Dnn:         "internet",
+		Dnn:                     "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
 			Sd:  "010203",
@@ -73,10 +73,10 @@ var (
 	}
 
 	tiSub3ForAf1 = models.NefTrafficInfluSub{
-		AfServiceId: "Service3",
-		AfAppId:     "App3",
+		AfServiceId:             "Service3",
+		AfAppId:                 "App3",
 		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app3",
-		Dnn:         "internet",
+		Dnn:                     "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
 			Sd:  "010203",
@@ -102,9 +102,9 @@ var (
 	}
 
 	tiSub4ForAf1 = models.NefTrafficInfluSub{
-		AfServiceId: "Service4",
+		AfServiceId:             "Service4",
 		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app4",
-		Dnn:         "internet",
+		Dnn:                     "internet",
 		Snssai: &models.Snssai{
 			Sst: 1,
 			Sd:  "010203",
@@ -113,8 +113,8 @@ var (
 	}
 
 	tiSub5ForAf1 = models.NefTrafficInfluSub{
-		AfServiceId: "Service5",
-		AfAppId:     "App5",
+		AfServiceId:             "Service5",
+		AfAppId:                 "App5",
 		NotificationDestination: "http://127.0.0.100:8000/nnef-callback/v1/traffic-influence/app5",
 		TrafficFilters: []models.FlowInfo{
 			{
